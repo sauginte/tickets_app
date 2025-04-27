@@ -1,11 +1,21 @@
 import express from "express";
-import { v4 as uuidv4 } from "uuid";
+import cors from "cors";
 import "dotenv/config";
+import mongoose from "mongoose";
+import usersRouter from "./src/routes/user.js";
 
 const app = express();
 
-app.get("/", (req, res) => {
-  res.send("Hello World");
-});
+app.use(cors());
+app.use(express.json());
 
-app.listen(3000);
+mongoose
+  .connect(process.env.MONGODB_CONNECTION)
+  .then(() => console.log("Connected!"))
+  .catch((err) => {
+    console.log(err);
+  });
+
+app.use(usersRouter);
+
+app.listen(process.env.PORT);
