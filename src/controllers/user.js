@@ -43,13 +43,26 @@ const SIGN_UP = async (req, res) => {
   const response = await userModel(user);
   response.save();
 
-  const token = jwt.sign({ email: user.email, userId: user.id }, "jWtT0k3n", {
-    expiresIn: "2h",
-  });
+  const token = jwt.sign(
+    { email: user.email, userId: user.id },
+    process.env.JWT_SECRET,
+    {
+      expiresIn: "2h",
+    }
+  );
+
+  const refreshToken = jwt.sign(
+    { email: user.email, userId: user.id },
+    process.env.JWT_SECRET,
+    {
+      expiresIn: "24h",
+    }
+  );
 
   res.status(200).json({
     message: "SIGN UP successfull",
-    jwt: token,
+    jwt_token: token,
+    jwt_refresh_token: refreshToken,
   });
 };
 
@@ -72,14 +85,58 @@ const LOGIN = async (req, res) => {
     });
   }
 
-  const token = jwt.sign({ email: user.email, userId: user.id }, "jWtT0k3n", {
-    expiresIn: "2h",
-  });
+  const token = jwt.sign(
+    { email: user.email, userId: user.id },
+    process.env.JWT_SECRET,
+    {
+      expiresIn: "2h",
+    }
+  );
+
+  const refreshToken = jwt.sign(
+    { email: user.email, userId: user.id },
+    process.env.JWT_SECRET,
+    {
+      expiresIn: "24h",
+    }
+  );
 
   return res.status(200).json({
     message: "LOGIN successfull",
-    jwt: token,
+    jwt_token: token,
+    jwt_refresh_token: refreshToken,
   });
 };
 
-export { SIGN_UP, LOGIN };
+const NEW_JWT_TOKEN = async (req, res) => {
+  const token = req.headers.authorization;
+  if (!token) {
+    return res.status(400).json({
+      message: "Token not found. Try to login",
+    });
+  }
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+    if (err) {
+      return res.status(401).json({
+        message: "User is unauthorized",
+      });
+    }
+
+    const refreshedToken = jwt.sign(
+      { email: decoded.email, userId: decoded.userId },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "24h",
+      }
+    );
+
+    return res.status(200).json({
+      message: "LOGIN successfull",
+      jwt_token: refreshedToken,
+      jwt_refresh_token: req.headers.authorization,
+    });
+  });
+};
+
+export { SIGN_UP, LOGIN, NEW_JWT_TOKEN };
