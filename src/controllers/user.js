@@ -139,4 +139,28 @@ const NEW_JWT_TOKEN = async (req, res) => {
   });
 };
 
-export { SIGN_UP, LOGIN, NEW_JWT_TOKEN };
+const ALL_USERS = async (req, res) => {
+  const users = await userModel.find();
+
+  users.sort((a, b) => (a.name > b.name ? 1 : -1));
+
+  return res.status(200).json({
+    users: users,
+  });
+};
+
+const USER_BY_ID = async (req, res) => {
+  const user = await userModel.findOne({ id: req.params.id });
+
+  if (!user) {
+    return res.status(404).json({
+      message: "User not found",
+    });
+  }
+
+  return res.status(200).json({
+    user: user,
+  });
+};
+
+export { SIGN_UP, LOGIN, NEW_JWT_TOKEN, ALL_USERS, USER_BY_ID };
