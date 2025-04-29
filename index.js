@@ -3,6 +3,7 @@ import cors from "cors";
 import "dotenv/config";
 import mongoose from "mongoose";
 import usersRouter from "./src/routes/user.js";
+import ticketsRouter from "./src/routes/ticket.js";
 
 const app = express();
 
@@ -17,5 +18,6 @@ mongoose
   });
 
 app.use(usersRouter);
+app.use(ticketsRouter);
 
 app.listen(process.env.PORT);
