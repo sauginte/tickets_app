@@ -22,4 +22,8 @@ const INSERT_TICKET = async (req, res) => {
   });
 };
 
-export { INSERT_TICKET };
+const BUY_TICKET = async (req, res) => {
+  const reqData = req.body;
+};
+
+export { INSERT_TICKET, BUY_TICKET };
