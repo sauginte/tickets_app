@@ -12,6 +12,7 @@ const INSERT_TICKET = async (req, res) => {
     fromLocation: data.fromLocation,
     toLocation: data.toLocation,
     toLocationPhotoUrl: data.toLocationPhotoUrl,
+    isPurchased: false,
   };
 
   const response = await ticketModel(ticket);
@@ -26,15 +27,46 @@ const INSERT_TICKET = async (req, res) => {
 const BUY_TICKET = async (req, res) => {
   const reqData = req.body;
 
-  const response = await userModel.findOneAndUpdate(
+  const findTicket = await ticketModel.findOne({ id: reqData.ticketId });
+  if (!findTicket) {
+    return res.status(404).json({ message: "Ticket not found" });
+  }
+  if (findTicket.isPurchased) {
+    return res
+      .status(400)
+      .json({ message: "This ticket is already purchased" });
+  }
+
+  const findUser = await userModel.findOne({ id: reqData.userId });
+  if (!findUser) {
+    return res.status(404).json({ message: "User not found" });
+  }
+
+  if (findUser.moneyBalance < findTicket.ticketPrice) {
+    return res.status(400).json({
+      message: "Money balance is too low. You can't buy a ticket.",
+    });
+  }
+
+  const updateUser = await userModel.findOneAndUpdate(
     { id: reqData.userId },
-    { $push: { boughtTickets: reqData.ticketId } },
+    {
+      $inc: { moneyBalance: -findTicket.ticketPrice },
+      $push: { boughtTickets: reqData.ticketId },
+    },
+    { new: true }
+  );
+
+  const updateTicket = await ticketModel.findOneAndUpdate(
+    { id: reqData.ticketId },
+    { $set: { isPurchased: true } },
     { new: true }
   );
 
   res.status(200).json({
     message: "You bought a ticket",
-    user: response,
+    user: updateUser,
+    ticket: updateTicket,
   });
 };
 

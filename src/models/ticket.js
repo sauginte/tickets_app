@@ -7,6 +7,7 @@ const ticketSchema = mongoose.Schema({
   fromLocation: { type: String, required: true, min: 3 },
   toLocation: { type: String, required: true, min: 3 },
   toLocationPhotoUrl: { type: String, required: true },
+  isPurchased: { type: Boolean, required: true },
 });
 
 export default mongoose.model("Ticket", ticketSchema);

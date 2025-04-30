@@ -6,6 +6,6 @@ const router = express.Router();
 
 router.post("/tickets", auth, INSERT_TICKET);
 
-router.put("/tickets/buy", BUY_TICKET);
+router.put("/tickets/buy", auth, BUY_TICKET);
 
 export default router;
