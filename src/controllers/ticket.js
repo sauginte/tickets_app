@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
 import ticketModel from "../models/ticket.js";
+import userModel from "../models/user.js";
 
 const INSERT_TICKET = async (req, res) => {
   const data = req.body;
@@ -24,6 +25,17 @@ const INSERT_TICKET = async (req, res) => {
 
 const BUY_TICKET = async (req, res) => {
   const reqData = req.body;
+
+  const response = await userModel.findOneAndUpdate(
+    { id: reqData.userId },
+    { $push: { boughtTickets: reqData.ticketId } },
+    { new: true }
+  );
+
+  res.status(200).json({
+    message: "You bought a ticket",
+    user: response,
+  });
 };
 
 export { INSERT_TICKET, BUY_TICKET };
