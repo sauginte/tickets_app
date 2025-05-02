@@ -163,4 +163,41 @@ const USER_BY_ID = async (req, res) => {
   });
 };
 
-export { SIGN_UP, LOGIN, NEW_JWT_TOKEN, ALL_USERS, USER_BY_ID };
+const ALL_USERS_WITH_TICKETS = async (req, res) => {
+  const usersWithTickets = await userModel.aggregate([
+    {
+      $lookup: {
+        from: "tickets", // nurodoma kolekcija
+        localField: "boughtTickets", // laukas users kolekcijoje (pagal kokį lauką turi lookup'int)
+        foreignField: "id", // laukas tickets kolekcijoje
+        as: "boughtTickets", // kaip pavadinsi naują susietą lauką
+      },
+    },
+    {
+      $project: {
+        name: 1,
+        email: 1,
+        moneyBalance: 1,
+        boughtTickets: {
+          id: 1,
+          title: 1,
+          ticketPrice: 1,
+          fromLocation: 1,
+          toLocation: 1,
+          toLocationPhotoUrl: 1,
+        },
+      },
+    },
+  ]);
+
+  return res.status(200).json({ usersWithTickets: usersWithTickets });
+};
+
+export {
+  SIGN_UP,
+  LOGIN,
+  NEW_JWT_TOKEN,
+  ALL_USERS,
+  USER_BY_ID,
+  ALL_USERS_WITH_TICKETS,
+};
