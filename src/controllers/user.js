@@ -193,6 +193,48 @@ const ALL_USERS_WITH_TICKETS = async (req, res) => {
   return res.status(200).json({ usersWithTickets: usersWithTickets });
 };
 
+const USER_BY_ID_WITH_TICKETS = async (req, res) => {
+  const user = await userModel.findOne({ id: req.params.id });
+
+  if (!user) {
+    return res.status(404).json({
+      message: "User not found",
+    });
+  }
+
+  const userWithTickets = await userModel.aggregate([
+    {
+      $match: { id: user.id },
+    },
+    {
+      $lookup: {
+        from: "tickets", // nurodoma kolekcija
+        localField: "boughtTickets", // laukas users kolekcijoje (pagal kokį lauką turi lookup'int)
+        foreignField: "id", // laukas tickets kolekcijoje
+        as: "boughtTickets", // kaip pavadinsi naują susietą lauką
+      },
+    },
+    {
+      $project: {
+        id: 1,
+        name: 1,
+        email: 1,
+        moneyBalance: 1,
+        boughtTickets: {
+          id: 1,
+          title: 1,
+          ticketPrice: 1,
+          fromLocation: 1,
+          toLocation: 1,
+          toLocationPhotoUrl: 1,
+        },
+      },
+    },
+  ]);
+
+  return res.status(200).json({ userWithTickets: userWithTickets });
+};
+
 export {
   SIGN_UP,
   LOGIN,
@@ -200,4 +242,5 @@ export {
   ALL_USERS,
   USER_BY_ID,
   ALL_USERS_WITH_TICKETS,
+  USER_BY_ID_WITH_TICKETS,
 };
