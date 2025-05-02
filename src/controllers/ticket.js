@@ -38,13 +38,11 @@ const BUY_TICKET = async (req, res) => {
   }
 
   const findUser = await userModel.findOne({ id: reqData.userId });
-  if (!findUser) {
-    return res.status(404).json({ message: "User not found" });
-  }
 
   if (findUser.moneyBalance < findTicket.ticketPrice) {
     return res.status(400).json({
-      message: "Money balance is too low. You can't buy a ticket.",
+      message: "Money balance is too low. You can't buy this ticket.",
+      balance: "Your balance: " + findUser.moneyBalance,
     });
   }
 

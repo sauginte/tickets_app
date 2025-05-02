@@ -118,8 +118,8 @@ const NEW_JWT_TOKEN = async (req, res) => {
 
   jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
     if (err) {
-      return res.status(401).json({
-        message: "User is unauthorized",
+      return res.status(400).json({
+        message: "Token not found. Try to login",
       });
     }
 
