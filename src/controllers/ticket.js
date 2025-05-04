@@ -64,7 +64,7 @@ const BUY_TICKET = async (req, res) => {
   res.status(200).json({
     message: "You bought a ticket",
     user: updateUser,
-    ticket: updateTicket,
+    boughtTicket: updateTicket,
   });
 };
 
