@@ -9,12 +9,15 @@ import {
   USER_BY_ID_WITH_TICKETS,
 } from "../controllers/user.js";
 import auth from "../middleware/auth.js";
+import validate from "../middleware/validation.js";
+import signUpSchema from "../schemas/signup.js";
+import loginSchema from "../schemas/login.js";
 
 const router = express.Router();
 
-router.post("/users/signup", SIGN_UP);
+router.post("/users/signup", validate(signUpSchema), SIGN_UP);
 
-router.post("/users/login", LOGIN);
+router.post("/users/login", validate(loginSchema), LOGIN);
 
 router.get("/users/getNewJwtToken", NEW_JWT_TOKEN);
 

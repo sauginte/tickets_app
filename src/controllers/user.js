@@ -167,10 +167,10 @@ const ALL_USERS_WITH_TICKETS = async (req, res) => {
   const usersWithTickets = await userModel.aggregate([
     {
       $lookup: {
-        from: "tickets", // nurodoma kolekcija
-        localField: "boughtTickets", // laukas users kolekcijoje (pagal kokį lauką turi lookup'int)
-        foreignField: "id", // laukas tickets kolekcijoje
-        as: "boughtTickets", // kaip pavadinsi naują susietą lauką
+        from: "tickets",
+        localField: "boughtTickets",
+        foreignField: "id",
+        as: "boughtTickets",
       },
     },
     {
@@ -208,10 +208,10 @@ const USER_BY_ID_WITH_TICKETS = async (req, res) => {
     },
     {
       $lookup: {
-        from: "tickets", // nurodoma kolekcija
-        localField: "boughtTickets", // laukas users kolekcijoje (pagal kokį lauką turi lookup'int)
-        foreignField: "id", // laukas tickets kolekcijoje
-        as: "boughtTickets", // kaip pavadinsi naują susietą lauką
+        from: "tickets",
+        localField: "boughtTickets",
+        foreignField: "id",
+        as: "boughtTickets",
       },
     },
     {
